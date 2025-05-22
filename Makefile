@@ -35,8 +35,9 @@ test: $(TEST_EXEC)
 $(OBJ_DIR)/%.test.o: $(TEST_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -I$(INC_DIR) -c $< -o $@
 
-$(TEST_EXEC): $(TEST_OBJECTS) $(OBJ_DIR)/Arme.o $(OBJ_DIR)/Personnage.o $(OBJ_DIR)/SuperBonus.o
-	$(CXX) $(CXXFLAGS) $^ -lgtest -lgtest_main -lgmock -pthread -o $@
+$(TEST_EXEC): $(OBJ_DIR)/test_Arme.test.o $(OBJ_DIR)/test_Personnage.test.o $(OBJ_DIR)/Arme.o $(OBJ_DIR)/Personnage.o $(OBJ_DIR)/SuperBonus.o | $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
+	$(CXX) -I$(INC_DIR) -Wall -Wextra -std=c++17 $^ -lgtest -lgtest_main -lgmock -pthread -o $(TEST_EXEC)
 
 clean:
 	rm -rf build/objects/*.o build/bin/jeu build/bin/tests

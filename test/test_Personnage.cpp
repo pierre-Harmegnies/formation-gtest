@@ -18,7 +18,8 @@ public:
 
     // Redéfinition pour utiliser le bonus mocké
     int getPuissance() const override {
-        return getPuissanceBase() * m_mockBonus->getBonus();
+        int bonus = m_mockBonus->getBonus();        
+        return getPuissanceBase() * bonus;
     }
     int getBonus() const override {
         return m_mockBonus->getBonus();
@@ -53,19 +54,24 @@ TEST(PersonnageTest, AttaqueEtDegatsAvecBonusMock) {
     EXPECT_CALL(bonus1, getBonus()).WillRepeatedly(Return(2));
     EXPECT_CALL(bonus2, getBonus()).WillRepeatedly(Return(2));
 
-    MockArme arme1("Baton", 2, &bonus1); // puissance = 2*2 = 4
+    MockArme arme1("Bâton", 2, &bonus1); // puissance = 2*2 = 4
     MockArme arme2("Dague", 1, &bonus2); // puissance = 1*2 = 2
 
     TestPersonnage p1("Mage", 10, 3, arme1);
     TestPersonnage p2("Voleur", 10, 2, arme2);
 
-    // Mage attaque Voleur : dégâts = 3 (attaque) + 4 (puissance arme) = 7
-    p1.attaquer(p2); 
-    EXPECT_EQ(p2.getVie(), 3);
+    std::cout << "Arme de p1 " << p1.getArme()->getNom() << std::endl;
 
-    // Voleur attaque Mage : dégâts = 2 (attaque) + 2 (puissance arme) = 4
-    p2.attaquer(p1); 
-    EXPECT_EQ(p1.getVie(), 6);
+    // Mage attaque Voleur : dégâts = 4 (puissance arme)
+    EXPECT_EQ(p2.getVie(), 10);
+    p1.attaquer(p2); 
+    EXPECT_EQ(p2.getVie(), 3) << "La vie de p2 devrait être 3 après l'attaque de p1";
+
+    // Voleur attaque Mage : dégâts = 2 (puissance arme)
+    EXPECT_EQ(p1.getVie(), 10);
+    p2.attaquer(p1);
+    EXPECT_EQ(p1.getVie(), 6) << "La vie de p1 devrait être 6 après l'attaque de p1";
+
 }
 
 // Teste la mort d'un personnage après avoir reçu trop de dégâts
